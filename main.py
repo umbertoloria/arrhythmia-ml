@@ -61,11 +61,20 @@ def compute_dbscan(df, eps, min_samples, xcol, ycol, filepath):
 	plt.savefig(filepath)
 
 
+def load_augmented_dataset(data_filepath, skip_records_with_empty_values):
+	dataset = load_dataset(data_filepath, skip_records_with_empty_values)
+	df_orig = pd.DataFrame(data=dataset)
+	means = df_orig.mean()
+	for col in ['t', 'p', 'qrst', 'j', 'heart-rate']:
+		col_mean = round(means[col])
+		dataset[col] = [(col_mean if val is None else val) for val in dataset[col]]
+	return dataset
+
+
 def main():
 	data_filepath = 'dataset/arrhythmia.data'
 	skip_records_with_empty_values = False
-	dataset = load_dataset(data_filepath, skip_records_with_empty_values)
-
+	dataset = load_augmented_dataset(data_filepath, skip_records_with_empty_values)
 	df = pd.DataFrame(data=dataset)
 	print(df.head())
 	print(df.describe())
